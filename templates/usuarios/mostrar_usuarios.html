@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load planteamientos_tags %}
+
+{% block link %}
+
+    <!-- iCheck -->
+   <link href="{% static "scp/vendors/iCheck/skins/flat/green.css" %}" rel="stylesheet">
+
+{% endblock %}
+
+
+
+{% block body %}
+
+        <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="title_left">
+                <h3>Tabla <small>con el contenido de todos los usuarios</small></h3>
+              </div>
+              <form action="" method="GET" >
+              <div class="title_right">
+                <div class="col-md-5 col-sm-5   form-group pull-right top_search">
+                  <div class="input-group">
+
+                    <input name="buscar" type="text" class="form-control" placeholder="usuarios ...">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" type="submit">Buscar</button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              </form>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="row" style="display: block;">
+
+
+              <div class="clearfix"></div>
+
+              <div class="col-md-12 col-sm-12  ">
+              {% include 'mensajes.html' %}
+                <div class="x_panel">
+                  <div class="x_title d-flex">
+                    <h2>Listado de Usuarios </h2>
+                    <a href="{% url 'usuarios:registrar_usuario' %}" type="button" class="btn btn-secondary btn-sm ml-auto" >Adicionar Usuario</a>
+                    <div class="clearfix"></div>
+                  </div>
+
+                  <div class="x_content">
+
+                    <div class="table-responsive">
+                      <table class="table table-striped jambo_table bulk_action">
+
+                        <thead>
+                          <tr class="headings">
+                            <th>
+                              <input type="checkbox" id="check-all" class="flat">
+                            </th>
+                            <th class="column-title">Nombre de Usuario</th>
+                            <th class="column-title">Correo Electrónico</th>
+                            <th class="column-title">Nombre </th>
+                            <th class="column-title">Apellidos</th>
+                            <th class="column-title">Administrador </th>
+                            <th class="column-title no-link last"><span class="nobr">Acción</span>
+                            </th>
+                            <th class="bulk-actions" colspan="7">
+                              <a class="antoo" style="color:#fff; font-weight:500;">Eliminar ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
+                            </th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for user in users %}
+                          <tr class="even pointer">
+                            <td class="a-center ">
+                              <input type="checkbox" class="flat" name="table_records">
+                            </td>
+                            <td class=" ">{{ user.username }}</td>
+                            <td class=" ">{{ user.email }}</td>
+                            <td class=" ">{{ user.first_name }}</td>
+                            <td class=" ">{{ user.last_name}}</td>
+                            <td class=" ">
+                                {% if user.is_staff %}
+                                    <i class="fa fa-check" ></i>
+                                {% endif %}
+
+                            </td>
+                            <td class=" last"><a type="button"  data-toggle="modal" data-target=".bs-example-modal-{{ user.id }}">Ver</a>
+                            </td>
+                          </tr>
+
+                            <!------------------------- Large modal ------------------------->
+
+
+                            <div class="modal fade bs-example-modal-{{ user.id }}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+
+                                <div class="modal-header">
+                                <h4 class="modal-title" id="myModalLabel">Ver usuario {{ user.get_full_name }}</h4>
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+
+                                    <p><strong>Nombre de usuario:</strong> {{ user.username }}</p>
+                                    <p><strong>Correo:</strong> {{ user.email }}</p>
+                                    <p><strong>Supervisor:</strong>
+                                        {{ user.is_staff| Si_o_No }}
+                                    </p>
+                                    <p><strong>Administrador:</strong>
+                                        {{ user.is_superuser| Si_o_No }}
+                                    </p>
+                                    <p><strong>Activo:</strong>
+                                        {{ user.is_active| Si_o_No }}
+                                    </p>
+                                    <p><strong>Ultima Sesion:</strong>{{ user.last_login }}</p>
+                                    <p><strong>Fecha de Autenticación:</strong> {{ user.date_joined }}</p>
+
+                                </div>
+                                <div class="modal-footer d-flex">
+                                    <a type="button" class="btn btn-danger mr-auto" href="{% url 'usuarios:eliminar_usuario' user.id %}" >Eliminar</a>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                    <a type="button" class="btn btn-primary" href="{% url 'usuarios:editar_usuario' user.id 1 %}">Editar</a>
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                            <!---------------------- /modals ------------------------------->
+                        {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+{% endblock %}
+
+{% block script %}
+
+    <!-- iCheck -->
+    <script src="{% static "scp/vendors/iCheck/icheck.min.js" %}"></script>
+
+{% endblock %}
+
+

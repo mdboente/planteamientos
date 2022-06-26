@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load planteamientos_tags %}
+
+{% block body %}
+
+    <div class="right_col" role="main" style="min-height: 5282px;">
+          <div class="">
+              <div class="clearfix"></div>
+
+              <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel">
+                  <div class="x_title d-flex">
+                    <h2>Planteamientos<small><a href="{% url 'planteamientos:planteamiento' 1 %}">Ver todos</a></small></h2>
+                  <div class="ml-auto">
+                    <a type="button" class="btn btn-success btn-sm"  href="{% url "planteamientos:xlsx" %}">Excel</a>
+                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bs-example-modal-lg">Filtrar</button>
+
+
+                   <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+
+                      <div class="modal-content">
+                        <br>
+                        <br>
+                        <br>
+                        <form  action="" method="POST">
+                        {% csrf_token %}
+
+                      <div class="field item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align">Titulo</label>
+                        <div class="col-md-9 col-sm-9 ">
+                          <input type="text" class="form-control" name="titulo">
+                        </div>
+                      </div>
+                      <div class="field item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align">clasificacion</label>
+                        <div class="col-md-9 col-sm-9 ">
+                          <select class="form-control" name="clasificacion">
+                            <option value="No Especificado">No especificado</option>
+                            <option value="Territorial">Territorial</option>
+                            <option value="Nacional">Nacional</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="field item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align">Estado</label>
+                        <div class="col-md-9 col-sm-9 ">
+                          <select class="form-control" name="estado">
+                            <option value="No Especificado">No especificado</option>
+                            <option value="Nuevo">Nuevo</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Solucionado">Solucionado</option>
+
+                          </select>
+                        </div>
+                      </div>
+                      <div class="field item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align">Unidad Dirigida</label>
+                        <div class="col-md-9 col-sm-9 ">
+                          <select class="form-control" name="unidad_id">
+                          <option value="No Especificado">No especificado</option>
+                            {% for unidad in unidades %}
+                                <option value="{{ unidad.id }}">{{ unidad }}</option>
+                            {% endfor %}
+
+                          </select>
+                        </div>
+                      </div>
+                      <div class="field item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align">Sección Sindical</label>
+                        <div class="col-md-9 col-sm-9 ">
+                          <select class="form-control" name="seccion_sindical_id">
+                          <option value="No Especificado">No especificado</option>
+                            {% for seccion in secciones %}
+                                <option value="{{ seccion.id }}">{{ seccion }}</option>
+                            {% endfor %}
+
+                          </select>
+                        </div>
+                      </div>
+                      <div class="field item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align ">Proceso</label>
+                        <div class="col-md-6 col-sm-6 ">
+                          <select class="form-control" name="proceso">
+                          <option value="No especificado">No especificado</option>
+                            {% for proceso in procesos %}
+                                <option value="{{ proceso.id }}">{{ proceso }}</option>
+                            {% endfor %}
+
+                          </select>
+                        </div>
+                      </div>
+
+
+                      <div class="field item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3  label-align">Fecha de Creación</label>
+                      <div class="col-md-6 col-sm-6">
+                        <input class="form-control" type="date" name="fecha" value=""></div>
+                    </div>
+                    <div class="field item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3  label-align">Fecha de Vencimiento</label>
+                      <div class="col-md-6 col-sm-6">
+                        <input class="form-control" type="date" name="fecha_vencida" value="No espcificado"></div>
+                    </div>
+                      <div class="ln_solid"></div>
+                      <div class="form-group row">
+                        <div class="col-md-9 col-sm-9  offset-md-3">
+                          <button type="submit" class="btn btn-success">Filtrar</button>
+                        </div>
+                      </div>
+
+                    </form>
+
+                      </div>
+                    </div>
+                  </div>
+                     &nbsp;
+                     {% if request.user|secretario %}
+                      <a href="{% url 'planteamientos:crear_planteamiento' %}" type="button" class="btn btn-secondary btn-sm " >Adicionar Planteamiento</a>
+                      {% endif %}
+                  </div>
+                    <div class="clearfix"></div>
+
+                  </div>
+                  <div class="x_content">
+                      <div class="row">
+                          <div class="col-sm-12">
+                          {% include 'mensajes.html' %}
+                            <div class="card-box table-responsive">
+
+                        <div id="datatable-buttons_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap no-footer">
+
+                        <table id="datatable-buttons" class="table table-striped table-bordered dataTable no-footer dtr-inline" style="width: 100%;" role="grid" aria-describedby="datatable-buttons_info">
+                      <thead>
+                        <tr role="row">
+                            <th class="sorting_asc" tabindex="0" aria-controls="datatable-buttons" rowspan="1" colspan="1" style="width: 40px;" aria-sort="ascending" aria-label="Name: activate to sort column descending">
+                                Indice
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="datatable-buttons" rowspan="1" colspan="1" style="width: 132px;" aria-label="Position: activate to sort column ascending">
+                                Título
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="datatable-buttons" rowspan="1" colspan="1" style="width: 132px;" aria-label="Position: activate to sort column ascending">
+                                Clasificación
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="datatable-buttons" rowspan="1" colspan="1" style="width: 57px;" aria-label="Office: activate to sort column ascending">
+                                Estado
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="datatable-buttons" rowspan="1" colspan="1" style="width: 57px;" aria-label="Office: activate to sort column ascending">
+                                Unidad Dirigida
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="datatable-buttons" rowspan="1" colspan="1" style="width: 80px;" aria-label="Age: activate to sort column ascending">
+                                Sección Sindical
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="datatable-buttons" rowspan="1" colspan="1" style="width: 48px;" aria-label="Salary: activate to sort column ascending">
+                                Secretario
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="datatable-buttons" rowspan="1" colspan="1" style="width: 50px;" aria-label="Start date: activate to sort column ascending">
+                                Proceso
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="datatable-buttons" rowspan="1" colspan="1" style="width: 50px;" aria-label="Start date: activate to sort column ascending">
+                                Fecha de Creación
+                            </th>
+                            <th class="sorting" tabindex="0" aria-controls="datatable-buttons" rowspan="1" colspan="1" style="width: 50px;" aria-label="Start date: activate to sort column ascending">
+                                Fecha de Vencimiento
+                            </th>
+
+                        </tr>
+                      </thead>
+                            <tbody>
+
+                      <!-------------------- Tabla de Planteamientos ----------------------->
+
+                      {% for planteamiento in planteamientos %}
+
+                      <tr role="row" class="odd">
+
+                          <td tabindex="0" class="sorting_1">{{ forloop.counter }}</td>
+                          <td><a href="{% url 'planteamientos:inbox' planteamiento.id %}" >{{ planteamiento.titulo }}</a></td>
+                          <td>{{ planteamiento.clasificacion }}</td>
+                          <td>{{ planteamiento.estado }}</td>
+                          <td>{{ planteamiento.unidad }}</td>
+                          <td>{{ planteamiento.seccion_sindical.nombre }}</td>
+                          <td>{{ planteamiento.secretario }}</td>
+                          <td>{{ planteamiento.procesos| ninguno }}</td>
+                          <td>{{ planteamiento.fecha }}</td>
+                          <td>{{ planteamiento.fecha_vencida }}</td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                      <!-------------------------  / Tabla de Planteamientos -------------------------->
+                      </tbody>
+                    </table>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
+  </div>
+</div>
+    </div>
+
+
+
+
+
+
+
+{% endblock %}
+
+{% block script %}
+
+
+
+
+    <!-- iCheck -->
+    <script src="{% static "scp/vendors/iCheck/icheck.min.js" %}"></script>
+
+    <!-- DataTables -->
+    <script src="{% static "scp/vendors/datatables.net/js/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "scp/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
+    <script src="{% static "scp/vendors/datatables.net-buttons/js/dataTables.buttons.min.js" %}"></script>
+    <script src="{% static "scp/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js" %}"></script>
+    <script src="{% static "scp/vendors/datatables.net-buttons/js/buttons.flash.min.js" %}"></script>
+    <script src="{% static "scp/vendors/datatables.net-buttons/js/buttons.html5.min.js" %}"></script>
+    <script src="{% static "scp/vendors/datatables.net-buttons/js/buttons.print.min.js" %}"></script>
+    <script src="{% static "scp/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js" %}"></script>
+    <script src="{% static "scp/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js" %}"></script>
+    <script src="{% static "scp/vendors/datatables.net-responsive/js/dataTables.responsive.min.js" %}"></script>
+    <script src="{% static "scp/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js" %}"></script>
+    <script src="{% static "scp/vendors/datatables.net-scroller/js/dataTables.scroller.min.js" %}"></script>
+
+   <script>
+
+        let import_parent = document.getElementsByClassName("dt-buttons btn-group")[0]
+
+        let a = document.createElement("a")
+        a.href = {% url "planteamientos:xlsx" %}
+        a.innerText = "Excel"
+        import_parent.appendChild(a)
+
+    </script>
+
+{% endblock %}

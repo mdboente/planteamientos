@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+    <div class="right_col" role="main" style="min-height: 590px;">
+          <div class="">
+
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+              <div class="col-md-12 col-sm-12  ">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Ayuda</h2>
+
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content" >
+                      <div style="margin: 0px 50px  0px  50px;">
+                        <p> Gestión de Planteamientos es una aplicación realizada por el grupo de programación
+                            de Tecnología de la Información de la División Territorial de Villa Clara con la
+                            finalidad de optimizar y viabilizar los planteamientos realizados por cualquier
+                            secretario de cada sección sindical. </p>
+
+                        <p>Cada usuario de la aplicación constar de un rol
+                            que determina sus permisos en la misma ya sea un secretario,
+                            asignado a una sección sindical, un responsable, asignado a una unidad organizativa,
+                            un visualizador que solo tiene acceso a la información almacenada, un supervisor que da
+                            seguimiento al flujo evaluando la calidad de la respuesta de los planteamientos efectuados
+                            o un administrador, un rol especial que puede gestionar todos los permisos de la aplicación.</p>
+
+                        <p>La utilidad de la aplicación es automatizar el flujo de los planteamientos realizados por parte
+                            de las secciones sindicales de la División Territorial de Villa Clara, optimizando el tiempo de
+                            respuesta a los mismos. </p>
+
+                        <p>Cada usuario desde la página principal de la aplicación tiene un acceso a modificar su contraseña,
+                            donde debe rellenar un pequeño formulario con su nombre de usuario y correo y automáticamente se
+                            le notificará a su correo una contraseña de acceso
+                            de forma aleatoria, que puede ser cambiada a conveniencia una vez que se encuentre logueado
+                            en la aplicación desde la configuración del perfil.</p>
+
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion14.png'  %} "  width="900"></div>
+                           <br>
+
+                          <p> Esta ayuda dividida en los cinco roles de usuario servirá de base y soporte
+                              para diversas dudas que van surgiendo en el uso de aplicación. </p>
+
+                          <h4><strong>Administrador</strong></h4>
+                          <p>El rol Administrador será asignado a aquel usuario con permisos especiales sobre la gestión de la aplicación,
+                              en vistas de un cambio de estructura empresarial futura existe un apartado donde dicho usuario puede hacer las
+                              modificaciones pertinentes, ya sea de adición, eliminación o modificación de secciones sindicales, unidades organizativas
+                              y usuarios del sistema.</p>
+
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion1.png'  %} "  width="900"></div>
+                          <br>
+                           <p>Un Administrador tiene permisos para realizar cualquier gestión vinculada a un planteamiento
+                               exceptuando su eliminación, es el responsable de reenviarlo hacia la unidad organizativa correcta
+                               en el caso de existir un error de asignación por parte del secretario, así como modificar el proceso
+                               origen del planteamiento; otra de sus responsabilidades es evaluar y corregir la información descrita
+                               en el texto del planteamiento para evitar el uso de terminologías que atenten contra la profesionalidad
+                               del mismo.</p>
+
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion2.png'  %} "  width="900"></div>
+                           <br>
+                          <p>La aplicación no se encarga de manipular un usuario, y asignarlo a una sección o unidad por tanto siempre
+                              se requiere al menos de un usuario con este rol que se encargue de establecer estas conexiones. Además,
+                              debe cerciorarse de asignarle a cada usuario su rol, si desea asignarlo como administrador de Gestión
+                              de Planteamiento solo debe marcar en el formulario de Usuarios como administrador, y así para el caso
+                              de supervisor.</p>
+
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion3.png'  %} "  width="900"></div>
+                           <br>
+
+                          <p>Si desea asociar una unidad organizativa a un usuario, se debe crear la unidad y en uno de sus campos
+                              en el formulario seleccionar el usuario que queremos que sea el responsable de la misma, así como en
+                              el caso de una sección sindical, en la que se especificaría a la unidad que pertenece y el usuario
+                              que va a ser su secretario. </p>
+
+                          <p>Uno de los riesgos del programa recae en el permiso de eliminación de Unidades y Secciones ya que un
+                              Planteamiento perdería el vínculo con cada una de estas, y los valores referentes a esta información
+                              que hayan sido vinculadas a un planteamiento desaparecerían automáticamente a partir de este momento,
+                              es preciso contactar con los desarrolladores de la aplicación para realizar una salva de toda la
+                              información almacenada en la base de datos antes de tomar una medida como esta.</p>
+
+                          <p>El Administrador también será avisado vía correo de la inserción de un nuevo planteamiento al sistema,
+                              así como del momento en que el jefe de unidad responde el mismo. Una vez que la respuesta es aprobada
+                              por el supervisor y llega al secretario de la sección sindical se activa una opción de leído que solo
+                              estará marcada cuando el secretario entre en el sistema y revise la notificación de respuesta al
+                              planteamiento, de esta manera se tiene una completa seguridad de que el flujo finalizo de una forma óptima.</p>
+
+                          <h4><strong>Visualizador</strong></h4>
+
+                          <p>El rol de visualizador corresponde a aquel usuario que fue registrado al sistema, pero no
+                              fue asociado a ninguna sección sindical como secretario ni a una unidad como responsable,
+                              más bien su finalidad es solo la visualización de todos los planteamientos efectuados y
+                              puede acceder a parámetros estadísticos proporcionados por el sistema para
+                              futuros informes que sean requeridos.</p>
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion4.png'  %} "  width="900"></div>
+                           <br>
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion5.png'  %} "  width="900"></div>
+                           <br>
+
+                          <h4><strong>Secretario</strong></h4>
+
+                          <p>Un usuario al ser asignado a una Sección Sindical pasa a ser automáticamente su secretario
+                              y es el encargado de insertar todos los planteamientos provenientes de la misma.</p>
+
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion6.png'  %} "  width="900"></div>
+                           <br>
+
+                          <p>Para realizar un planteamiento solo debe de ir a cualquiera de los accesos directos
+                              que la aplicación brinda y accederá a un formulario sencillo donde debe completar de
+                              forma obligatoria los campos: unidad de destino, título y descripción; también debe
+                              seleccionar el proceso en el que se originó el planteamiento, aunque esta opción puede
+                              ser especificada por el administrador más adelante. El título hace una referencia al
+                              planteamiento que vamos a redactar, siempre le aconsejaremos varios de los títulos ya
+                              introducidos para ayudar al filtrado, orden y uso de los planteamientos. El campo de
+                              selección de unidad destino, va a estar determinado por el planteamiento en sí, el
+                              secretario debe tener conocimientos previos de la estructura empresarial y de los temas
+                              que vinculan a cada una de las unidades responsables para lograr una correcta selección,
+                              en caso de error puede ser corregido más adelante por el administrador de la aplicación,
+                              quien tiene la responsabilidad de reenviar el planteamiento hacia su destino correcto.
+                              Ya una vez completado estos campos solo faltaría el contenido de su planteamiento que
+                              debe ser redactado de una forma clara y profesional.</p>
+
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion7.png'  %} "  width="900"></div>
+                           <br>
+
+                          <p>Una vez adicionado un planteamiento es enviado y notificado por vía correo a la unidad
+                              escogida, y el responsable de dicha unidad debe darle respuesta dentro de un plazo
+                              máximo de 10 días hábiles, en caso de error al seleccionar la unidad este tiempo va a
+                              ser considerado perdido ya que la nueva unidad de destino asociada va a contar con sus
+                              10 días de respuesta a partir de esta reasignación por parte del administrador, por tanto,
+                              se le aconseja que siempre revisen y verifiquen a donde van a enviar sus planteamientos,
+                              así ayudará al flujo de ellos y encontrarle una respuesta lo más rápido posible tanto
+                              para los representantes como los administradores. </p>
+
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion8.png'  %} "  width="900"></div>
+                           <br>
+                        <p>La aplicación además les brinda una ventana parecida a un correo que ayuda a la
+                            visualización de cada uno de los planteamientos. En la barra lateral izquierda
+                            señalada en amarillo puede ver los últimos planteamientos con estado de nuevo y
+                            si desea ver todos le brindamos un acceso directo en ¨Planteamientos¨. </p>
+
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion9.png'  %} "  width="900"></div>
+                           <br>
+
+                        <p>Una vez que el planteamiento se le haya dado respuesta esta es enviada y notificada al
+                            supervisor del sistema, es importante conocer que este planteamiento puede regresar
+                            con dos estados: solucionado, en el caso de que se le haya encontrado una solución
+                            inmediata al problema o en estado de pendiente, cuando existen factores externos que
+                            ocasionan una demora en esta solución, en este caso igualmente será notificada una
+                            respuesta para que queden claros los motivos, en caso de incumplirse el tiempo
+                            límite de respuesta también será notificado.</p>
+
+                        <h4><strong>Responsable</strong></h4>
+
+                          <p>El rol responsable tiene como función principal darle respuesta a los planteamientos
+                              vinculados a su unidad organizativa antes de que pasen los 10 días hábiles que tiene a
+                              su disposición para esta tarea, si dicha respuesta no está en sus manos debe elevar el
+                              planteamiento a nivel nacional e igualmente notificar la respuesta de este cuando tenga
+                              el conocimiento de la misma. </p>
+
+                           <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion10.png'  %} "  width="900"></div>
+                           <br>
+
+                          <p>Una vez que la respuesta fue efectuada pasa a ser evaluada para el supervisor,
+                              que en dependencia de su aprobación o no llega a su destino o regresa para hacer
+                              las modificaciones pertinentes de manera correspondiente.</p>
+
+                          <p>Si la respuesta que se da es considerada una solución debe ser especificado marcando
+                              en la opción provista, de esta manera el estado llega al secretario como solucionado,
+                              en caso contrario se considera una respuesta temporal y pasa automáticamente a un estado
+                              de pendiente, hasta que se cuente con la solución y se le notifique al secretario.</p>
+
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion11.png'  %} "  width="900"></div>
+                           <br>
+
+                          <p>Si la respuesta fue desaprobada por el supervisor llegará una notificación para que sea
+                              modificada y volverá a ser efectuado el mismo proceso descrito anteriormente.</p>
+
+                          <h4><strong>Supervisor</strong></h4>
+
+                          <p>El rol supervisor tiene como máxima responsabilidad evaluar la respuesta del planteamiento
+                              y darle su aprobación o no para que llegue al secretario o retorne al jefe de unidad para
+                              que sea modificada, también tiene la posibilidad de modificarla desde su propia sesión y
+                              automáticamente quedara aprobada.</p>
+
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion12.png'  %} "  width="900"></div>
+                           <br>
+
+                          <p>Este usuario será informado de cada planteamiento nuevo que sea incorporado y
+                              será notificado a su vez de la respuesta en el momento que esta se efectúe.</p>
+
+                          <div class="span8"><img src="{% static 'scp/production/images/gestion/gestion13.png'  %} "  width="900"></div>
+                           <br>
+
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+{% endblock %}
+

@@ -1,0 +1,208 @@
+<!--
+
+ this is my base template of my django app;
+ your name is 'scp'.
+ if you want use this file, you have to write this:
+
+  *  { %  extends 'base.html' % } ->> at the start of the template
+
+  *  { % block body % } " all bady from you template " { % endblock % }
+
+  * { % block link % } " all link from you template " { % endblock % }
+
+  * { % block content % } " any optional content from you template " { % endblock % }
+
+  * { % block script % } " all script of you template " { % endblock % }
+
+ -->
+
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="es" class=" "><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> Gestion de Planteamientos </title>
+
+    <!-- Bootstrap -->
+    <link href="{% static "scp/vendors/bootstrap/dist/css/bootstrap.min.css" %}" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="{% static "scp/vendors/font-awesome/css/font-awesome.min.css" %}" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="{% static "scp/vendors/nprogress/nprogress.css" %}" rel="stylesheet">
+
+    <link href="{% static "scp/vendors/google-code-prettify/bin/prettify.min.css" %}" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="{% static "scp/build/css/custom.min.css" %}" rel="stylesheet">
+
+    {% block link %}
+
+        <!-- Insert any link here  -->
+
+    {% endblock %}
+  </head>
+
+  <body class="nav-md">
+    <div class="container body">
+      <div class="main_container">
+        <div class="col-md-3 left_col">
+          <div class="left_col scroll-view">
+            <div class="navbar nav_title" style="border: 0;">
+              <a href="#" class="site_title"> <span>Planteamientos</span></a>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <!-- menu profile quick info -->
+            <div class="profile clearfix" >
+              <div class="profile_info" >
+                <span>Bienvenido,</span>
+                <h2 style="display: inline-block;"> {{user.first_name}} </h2>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+            <!-- /menu profile quick info -->
+
+            <br>
+
+            <!-- sidebar menu -->
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+              <div class="menu_section">
+                <h3>General</h3>
+
+                <ul class="nav side-menu">
+                  <li><a href="{% url 'planteamientos:inbox' 0 %}" ><i class="fa fa-home"></i> Inicio </a></li>
+                  <li><a href="{% url 'planteamientos:planteamiento' 2 %}" ><i class="fa fa-table"></i> Planteamientos </a>
+                  </li>
+                    {% if user.is_superuser %}
+                    <li class=""><a><i class="fa fa-cog"></i> Administración <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu" style="display: none;">
+                      <li><a href="{% url 'usuarios:mostrar_usuarios' %}">Usuarios</a></li>
+                      <li><a href="{% url 'unidades:listar' %}">Unidad Organizativa</a></li>
+                      <li><a href="{% url 'unidades:listar_seccion' %}">Sección Sindical</a></li>
+                    </ul>
+                        {% endif %}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- /sidebar menu -->
+
+        <!-- top navigation -->
+        <div class="top_nav">
+            <div class="nav_menu">
+                <div class="nav toggle">
+                  <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                </div>
+                <nav class="nav navbar-nav">
+                <ul class=" navbar-right">
+                  <li class="nav-item dropdown open" style="padding-left: 15px;">
+                    <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
+                      {{ user.first_name }}
+                    </a>
+                    <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="{% url 'usuarios:perfil' %}"> Perfil </a>
+
+                    <a class="dropdown-item" href="{% url 'usuarios:ayuda' %}">Ayuda</a>
+                      <a class="dropdown-item" href="{% url 'logout' %}"><i class="fa fa-sign-out pull-right"></i> Salir </a>
+                    </div>
+                  </li>
+
+                  <li role="presentation" class="nav-item dropdown open">
+                    <a href="javascript:;" class="dropdown-toggle info-number" id="navbarDropdown1" data-toggle="dropdown" aria-expanded="false">
+                      <i class="fa fa-envelope-o"></i>
+                      <span class="badge bg-green">{{ request.session.notification.cant_notify }}</span>
+                    </a>
+                    <ul class="dropdown-menu list-unstyled msg_list" role="menu" aria-labelledby="navbarDropdown1">
+
+                    {% for planteamiento in request.session.notification.notify %}
+
+                      <li class="nav-item">
+                        <a class="dropdown-item" href="{% url 'planteamientos:inbox' planteamiento.id %}">
+
+                          <span>
+                            <span>{{ planteamiento.remitente }}</span>
+                              &nbsp; &nbsp;
+                              <strong>{{ planteamiento.asunto }}</strong>
+                            <span class="time">{{ planteamiento.fecha }}</span>
+                          </span>
+                          <span class="message">
+                            {{ planteamiento.titulo }}...
+                          </span>
+                        </a>
+                      </li>
+
+                    {% endfor %}
+
+                      <li class="nav-item">
+                        <div class="text-center">
+                          <a class="dropdown-item" href="{% url 'planteamientos:notificaciones' %}">
+                            <strong>Ver todos</strong>
+                            <i class="fa fa-angle-right"></i>
+                          </a>
+                        </div>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        <!-- /top navigation -->
+
+        <!-- page content -->
+
+          {% block body %}
+
+              <!-- here are all content of django app  -->
+
+          {% endblock %}
+
+          <!-- /page content -->
+
+        <!-- footer content -->
+
+        <footer>
+          <div class="pull-right">
+              Gestión de Planteamientos - <a href="https://www.etecsa.cu" target="_blank" >Etecsa</a>
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+
+      </div>
+    </div>
+
+    {% block content %}
+
+        <!-- Insert any content here ... -->
+
+    {% endblock %}
+
+
+    <!-- jQuery -->
+    <script src="{% static "scp/vendors/jquery/dist/jquery.min.js" %}"></script>
+    <!-- Bootstrap -->
+   <script src="{% static "scp/vendors/bootstrap/dist/js/bootstrap.bundle.min.js" %}"></script>
+    <!-- FastClick -->
+    <script src="{% static "scp/vendors/fastclick/lib/fastclick.js" %}"></script>
+    <!-- NProgress -->
+    <script src="{% static "scp/vendors/nprogress/nprogress.js" %}"></script>
+
+    <!-- Custom Theme Scripts -->
+    <script src="{% static "scp/build/js/custom.min.js" %}"></script>
+
+   {% block script %}
+
+       <!-- this is for add all script who you want  -->
+
+   {% endblock %}
+
+</body></html>

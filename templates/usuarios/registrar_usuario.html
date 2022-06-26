@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+          <!-- page content -->
+      <div class="right_col" role="main">
+        <div class="">
+          <div class="page-title">
+            <div class="title_left">
+              <h3>Adicionar Usuario</h3>
+            </div>
+
+          </div>
+          <div class="clearfix"></div>
+
+          <div class="row">
+            <div class="col-md-12 col-sm-12">
+                {% include 'mensajes.html' %}
+              <div class="x_panel">
+                <div class="x_content">
+                  <form class="" action="" method="POST" novalidate>
+                    {% csrf_token %}
+                    <span class="section">Información Personal</span>
+                      <div class="field item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3  label-align">Nombre</label>
+                      <div class="col-md-6 col-sm-6">
+
+                          <input class="form-control" data-validate-length-range="6" data-validate-words="2" name="first_name"
+                           required="required" />
+                      </div>
+                    </div>
+                      <div class="field item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3  label-align">Apellidos</label>
+                      <div class="col-md-6 col-sm-6">
+                          <input class="form-control" data-validate-length-range="6" data-validate-words="2" name="last_name"
+                           required="required" />
+                      </div>
+                    </div>
+                    <div class="field item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3  label-align">Nombre de Usario</label>
+                      <div class="col-md-6 col-sm-6">
+
+                        <input class="form-control" data-validate-length-range="6" data-validate-words="2" name="username"
+                            >
+                      </div>
+                    </div>
+                    <div class="field item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3  label-align">Correo Electrónico</label>
+                      <div class="col-md-6 col-sm-6">
+                          <input class="form-control" name="email" class='email' type="email"
+                          value="@etecsa.cu">
+                       </div>
+                    </div>
+
+                    <div class="field item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3  label-align">Contraseña</label>
+                      <div class="col-md-6 col-sm-6">
+                          <input class="form-control" type="password" name="password" data-validate-length="6,8"
+                          required='required' /></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6 offset-md-3">
+                        <div class="checkbox">
+                            <label>
+                              <input type="checkbox" value="Administrador" name="admin"> &nbsp; Supervisor ?
+                            </label>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6 offset-md-3">
+                        <div class="checkbox">
+                            <label>
+                              <input type="checkbox" value="SuperUsuario" name="superuser"> &nbsp; Administrador ?
+                            </label>
+                          </div>
+                        </div>
+                    </div>
+                      <br>
+                      <br>
+
+
+
+
+                      <div class="form-group">
+                        <div class="col-md-6 offset-md-3">
+                    <button type='reset' class="btn btn-success">Restaurar</button>
+                    <button type='submit' class="btn btn-primary">Adicionar</button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /page content -->
+
+
+{% endblock %}
+
+{% block content %}
+
+
+
+
+{% endblock %}

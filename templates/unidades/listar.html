@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load unidades_tags %}
+
+{% block link %}
+
+    <!-- iCheck -->
+   <link href="{% static "scp/vendors/iCheck/skins/flat/green.css" %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block body %}
+
+     <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="title_left">
+                <h3>Tabla <small>con contenido de todas las unidades</small></h3>
+              </div>
+                <form action="" method="GET">
+              <div class="title_right">
+                <div class="col-md-5 col-sm-5   form-group pull-right top_search">
+                  <div class="input-group">
+
+                        <input type="text" class="form-control" placeholder="..." name="buscar">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">Buscar</button>
+                        </span>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            </form>
+              <div class="clearfix"></div>
+
+              <div class="col-md-12 col-sm-12  ">
+                <div class="x_panel">
+                  <div class="x_title d-flex">
+                    <h2>Unidades Organizativas</h2>
+
+                      <!-------------------- Adicionar Unidad  -------------------------------------------->
+                      <button type="button" class="btn btn-secondary ml-auto" data-toggle="modal" data-placement="top" title="" data-original-title="Tooltip bottom" data-target=".bs-example-modal-sm">Adicionar Unidad</button>
+                                <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <form action="" method = "POST">
+                                            {% csrf_token %}
+                                        <div class="modal-body">
+                                            <h4>Adicionar Unidad</h4>
+
+                                            <div class="form-group row">
+                                                <label class="control-label col-md-4 col-sm-4 ">Unidad</label>
+                                                    <div class="col-md-9 col-sm-9 ">
+                                                        {{ form.nombre }}
+                                                    </div>
+                                                <br>
+                                                <br>
+                                                <br>
+                                                <label class="control-label col-md-4 col-sm-4 ">Responsable</label>
+                                                    <div class="col-md-9 col-sm-9 ">
+                                                        {{ form.responsable }}
+                                                    </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Adicionar</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                </div>
+
+                      <!-------------------- Adicionar Unidad  -------------------------------------------->
+
+                    <div class="clearfix"></div>
+                  </div>
+
+                  <div class="x_content">
+                      <table class="table table-striped jambo_table bulk_action">
+                          <thead>
+                          <tr class="headings">
+                              <th>
+                                  <input type="checkbox" id="check-all" class="flat">
+                              </th>
+                              <th class="column-title">Índice </th>
+                              <th class="column-title">Unidad </th>
+                              <th class="column-title">Responsable </th>
+                              <th class="column-title">Acción</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+
+                          <!---------------------------------------------------------->
+                          {% for unidad in unidades %}
+                              <tr class="even pointer">
+                                  <td class="a-center ">
+                                      <input type="checkbox" class="flat" name="table_records">
+                                  </td>
+                                  <td class=" ">{{ forloop.counter }}</td>
+                                  <td class=" ">{{ unidad.nombre }} </td>
+                                  <td class=" ">{{ unidad.responsable }}</td>
+                                  <td class=" last"><a type="button"  data-toggle="modal" data-target=".bs-example-modal-{{ unidad.id }}">Ver</a></td>
+                              </tr>
+
+
+                              <!------------------------- Large modal ------------------------->
+
+
+                              <div class="modal fade bs-example-modal-{{ unidad.id }}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                                  <div class="modal-dialog modal-lg">
+                                      <div class="modal-content">
+
+                                          <div class="modal-header">
+                                              <h4 class="modal-title" id="myModalLabel">Ver unidad</h4>
+                                              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                                              </button>
+                                          </div>
+                                          <form action="{% url 'unidades:editar' %}" method="POST">
+                                              {% csrf_token %}
+                                              <div class="modal-body">
+                                                  <div class="form-group row">
+                                                      <label class="control-label col-md-3 col-sm-3 ">Unidad</label>
+                                                      <div class="col-md-9 col-sm-9 ">
+                                                          <input type="text" name="nombre" id="autocomplete-custom-append" class="form-control " autocomplete="off" value="{{ unidad.nombre }}">
+                                                      </div>
+                                                  </div>
+                                                  <br>
+                                                  <div class="form-group row">
+                                                      <label class="control-label col-md-3 col-sm-3 ">Responsable</label>
+                                                      <div class="col-md-9 col-sm-9 ">
+                                                          <select class="form-control" name="responsable">
+                                                              {% for option in usuarios|sum_list:unidad.responsable %}
+                                                                  <option value="{{ option.id }}" {% if unidad.responsable == option %}selected{% endif %}>{{ option.username}}</option>
+                                                              {% endfor %}
+                                                          </select>
+                                                      </div>
+                                                  </div>
+
+                                              </div>
+                                              <div class="modal-footer d-flex">
+                                                  <a type="button" class="btn btn-danger mr-auto" href="{% url 'unidades:eliminar' unidad.id %}" >Eliminar</a>
+                                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                                  <button type="submit" class="btn btn-primary" name="Editar" value="{{ unidad.id }}" >Editar</button>
+                                              </div>
+                                          </form>
+                                  </div>
+                              </div>
+                              <!---------------------- /modals ------------------------------->
+
+                        {% endfor %}
+                        <!------------------------------------------------------------->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /page content -->
+
+
+{% endblock %}
+
+{% block script %}
+
+    <!-- iCheck -->
+    <script src="{% static "scp/vendors/iCheck/icheck.min.js" %}"></script>
+
+{% endblock %}

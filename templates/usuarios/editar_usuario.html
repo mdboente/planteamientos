@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+          <!-- page content -->
+      <div class="right_col" role="main">
+        <div class="">
+          <div class="page-title">
+            <div class="title_left">
+              <h3>Editar Usuario</h3>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+
+          <div class="row">
+            <div class="col-md-12 col-sm-12">
+
+            {% include 'mensajes.html' %}
+              <div class="x_panel">
+                <div class="x_content">
+                  <form class="" action="" method="POST" novalidate>
+                    {% csrf_token %}
+                    <span class="section">Informacion Personal {% if usuario.first_name %} de {{ usuario.first_name }} {% endif %}</span>
+                      <div class="field item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3  label-align">Nombre<span
+                          class="required">*</span></label>
+                      <div class="col-md-6 col-sm-6">
+
+                          <input class="form-control" data-validate-length-range="6" data-validate-words="2" name="first_name"
+                           required="required"  value="{{ usuario.first_name }}" />
+                      </div>
+                    </div>
+                      <div class="field item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3  label-align">Apellidos<span
+                          class="required">*</span></label>
+                      <div class="col-md-6 col-sm-6">
+                          <input class="form-control" data-validate-length-range="6" data-validate-words="2" name="last_name"
+                           required="required" value="{{ usuario.last_name }}" />
+                      </div>
+                    </div>
+                    <div class="field item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3  label-align">Nombre de Usario<span
+                          class="required">*</span></label>
+                      <div class="col-md-6 col-sm-6">
+
+                        <input class="form-control" data-validate-length-range="6" data-validate-words="2" name="username"
+                           required="required" value="{{ usuario.username }}" />
+                      </div>
+                    </div>
+                    <div class="field item form-group">
+                      <label class="col-form-label col-md-3 col-sm-3  label-align">Correo Electronico<span
+                          class="required">*</span></label>
+                      <div class="col-md-6 col-sm-6">
+                          <input class="form-control" name="email" class='email' required="required" type="email"
+                          value="{{ usuario.email}}" />
+                       </div>
+                    </div>
+                  {% if roll == 1 %}
+                    <div class="form-group">
+                        <div class="col-md-6 offset-md-3">
+                        <div class="checkbox">
+                            <label>
+                              <input type="checkbox" value="Administrador" name="admin" {% if usuario.is_staff %} checked {% endif %}> &nbsp; Supervisor ?
+                            </label>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6 offset-md-3">
+                        <div class="checkbox">
+                            <label>
+                              <input type="checkbox" value="SuperUsuario" name="superuser"  {% if usuario.is_superuser %} checked {% endif %}> &nbsp; Administrador ?
+                            </label>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6 offset-md-3">
+                        <div class="checkbox">
+                            <label>
+                              <input type="checkbox" value="Activado" name="activo" {% if usuario.is_active %} checked {% endif %}> &nbsp; Activo ?
+                            </label>
+                          </div>
+                        </div>
+                    </div>
+                  {% else %}
+                      <div class="form-group">
+                        <div class="col-md-6 offset-md-3">
+                        <div class="checkbox">
+                            <label>
+                               &nbsp;<a href="{% url 'usuarios:cambio_password' %}"> Desea Cambiar la contraseña ?</a>
+                            </label>
+                          </div>
+                        </div>
+                    </div>
+                      <input type="hidden" name="activo" value="True">
+                      {% if user.is_staff %}
+                          <input type="hidden" name="admin" value="True">
+                       {% endif %}
+
+                  {% endif %}
+                      <br>
+                      <br>
+                      <div class="form-group">
+                        <div class="col-md-6 offset-md-3">
+                    <button type='submit' class="btn btn-primary">Editar</button>
+                        </div>
+                      </div>
+
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /page content -->
+
+
+{% endblock %}
+
+{% block content %}
+
+
+
+
+{% endblock %}

@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load planteamientos_tags %}
+
+{% block body %}
+
+    <div class="right_col" role="main" style="min-height: 1145px;">
+          <div class="">
+
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+              <div class="col-md-12 col-sm-12 ">
+              {% include 'mensajes.html' %}
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Perfil <small>Reporte de Actividades</small></h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <div class="col-md-3 col-sm-3  profile_left">
+                      <div class="profile_img">
+                        <div id="crop-avatar">
+                          <!-- Current avatar -->
+                          <img class="img-responsive avatar-view" alt="Avatar" title="Change the avatar" src="{% static 'scp/production/images/user.png' %}">
+                        </div>
+                      </div>
+                      <h3>{{ perfil.user.get_full_name }}</h3>
+
+                      <ul class="list-unstyled user_data">
+                        <li><i class="fa fa-map-marker user-profile-icon"></i>
+                            {{ perfil.vinculo.unidad }}
+                        </li>
+
+                        <li>
+                          <i class="fa fa-briefcase user-profile-icon"></i> {{ perfil.vinculo.vinculo }}
+                        </li>
+
+                        <li class="m-top-xs">
+                          <i class="fa fa-send user-profile-icon"></i>
+                          {{ user.email }}
+                        </li>
+                      </ul>
+
+                      <a class="btn btn-success" href="{% url 'usuarios:editar_usuario' user.id 0 %}" ><i class="fa fa-edit m-right-xs"></i>Editar Perfil</a>
+                      <br>
+                      <br>
+                      <br>
+                      <!-- start skills -->
+                      <h4> Estado de los Planteamientos </h4>
+                      <ul class="list-unstyled user_data">
+                        <li>
+                          <p>Nuevos</p>
+                          <div class="progress progress_sm">
+                            <div class="progress-bar bg-blue" role="progressbar" data-transitiongoal="50" aria-valuenow="49" style="width: {{ estado.Nuevo }}%;"></div>
+                          </div>
+                        </li>
+                        <li>
+                          <p>Pendientes</p>
+                          <div class="progress progress_sm">
+                            <div class="progress-bar bg-orange" role="progressbar" data-transitiongoal="70" aria-valuenow="69" style="width: {{estado.Pendiente}}%;"></div>
+                          </div>
+                        </li>
+                        <li>
+                          <p>Solucionado</p>
+                          <div class="progress progress_sm">
+                            <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="30" aria-valuenow="29" style="width: {{ estado.Solucionado }}%;"></div>
+                          </div>
+                        </li>
+                      </ul>
+                      <!-- end of skills -->
+
+                    </div>
+                    <div class="col-md-9 col-sm-9 ">
+
+
+
+                      <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                        <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                          <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Planteamientos Recientes</a>
+                          </li>
+                          <li role="presentation" class="active"><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="true">Perfil</a>
+                          </li>
+                        </ul>
+                        <div id="myTabContent" class="tab-content">
+                          <div role="tabpanel" class="tab-pane active " id="tab_content1" aria-labelledby="home-tab">
+
+                            <!-- start recent activity -->
+                            <ul class="messages">
+
+                              {% if ninguno  %}
+                            {% for planteamiento in planteamientos %}
+                              <li>
+                                <img src="{% static 'scp/production/images/user.png' %}" class="avatar" alt="Avatar">
+                                <div class="message_date">
+                                  <h3 class="date text-info">{{ planteamiento.fecha.day }}</h3>
+                                  <p class="month">{{ planteamiento.fecha|date:" M "}}</p>
+                                </div>
+                                <div class="message_wrapper">
+                                  <h4 class="heading">{{ planteamiento.titulo }} &nbsp; &nbsp; &nbsp; <small >{{ planteamiento.estado }}</small></h4>
+                                  <blockquote class="message">{{ planteamiento.abreviar }}</blockquote>
+                                  <br>
+                                  <p class="url">
+                                    <span class="fs1 text-info" aria-hidden="true" data-icon=""></span>
+                                    <a href="{% url 'planteamientos:inbox' planteamiento.id %}"><i class="fa fa-paperclip"></i> ver detalles </a>
+                                      {% if perfil.tiene_seccion or perfil.tiene_unidad %}
+                                          {% if perfil.tiene_seccion %}
+                                          para: {{ planteamiento.unidad }}
+                                          {% endif %}
+                                          {% if perfil.tiene_unidad %}
+                                                de: {{ planteamiento.seccion_sindical }}
+                                          {% endif %}
+                                      {% else %}
+                                          de: {{ planteamiento.seccion_sindical }} para: {{ planteamiento.unidad }}
+                                      {% endif %}
+                                {% endfor %}
+
+                                  </p>
+                                </div>
+                              </li>
+                                {% else %}
+                                  <li>
+                                <img src="{% static 'scp/production/images/user.png' %}" class="avatar" alt="Avatar">
+                                <div class="message_date">
+                                  <h3 class="date text-info">{{ planteamiento.fecha.day }}</h3>
+                                  <p class="month">{{ planteamiento.fecha|date:" M "}}</p>
+                                </div>
+                                <div class="message_wrapper">
+                                  <h4 class="heading">{{ planteamiento.titulo }}</h4>
+                                  <blockquote class="message">{{ planteamiento.abreviar }}</blockquote>
+                                  <br>
+                                  <p class="url">
+                                    <span class="fs1 text-info" aria-hidden="true" data-icon=""></span>
+                                  <i class="fa fa-plus"></i>
+                                  No se han encontrado planteamientos recientes relacionado a este perfil...
+                                  {% if perfil.tiene_seccion %}
+                                    <a href="{% url 'planteamientos:crear_planteamiento' %}">
+
+
+                                          si desea realizar algun planteamiento presione en este link
+                                    </a>
+                                   {% endif %}
+                                  </p>
+                                </div>
+                              </li>
+
+
+
+                                {% endif %}
+
+                            </ul>
+                            <!-- end recent activity -->
+
+                          </div>
+                          <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
+
+
+
+                          </div>
+                          <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
+                              <ul>
+                                <li>
+                                    <strong>nombre de usuario: </strong> &nbsp; {{ user.username }}
+                                </li>
+                                  <br>
+                                  <li>
+                                    <strong>Nombre: </strong> &nbsp; {{ user.get_full_name }}
+                                </li>
+                                  <br>
+                                  <li>
+                                    <strong>Correo: </strong> &nbsp; {{ user.email }}
+                                </li>
+                                  <br>
+                                  <li>
+                                    <strong>Supervisor: </strong> &nbsp; {{ user.is_staff|Si_o_No }}
+                                </li>
+                                  <li>
+                                    <strong>Administrador: </strong> &nbsp; {{ user.is_superuser|Si_o_No }}
+                                </li>
+                                  <br>
+                                  <li>
+                                    <strong>Secretario: </strong> &nbsp; {{ perfil.tiene_seccion|Si_o_No }}
+                                </li>
+                                  <br>
+                                  <li>
+                                    <strong>Representante: </strong> &nbsp; {{ perfil.tiene_unidad|Si_o_No }}
+                                </li>
+                                  <br>
+                                  <li>
+                                    <strong>Último inicio de Sesión: </strong> &nbsp; {{ user.last_login }}
+                                </li>
+                                  <br>
+                                  <li>
+                                    <strong>Fecha de autenticación: </strong> &nbsp; {{ user.date_joined }}
+                                </li>
+
+                              </ul>
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+{% endblock %}

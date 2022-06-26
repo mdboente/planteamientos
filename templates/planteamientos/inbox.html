@@ -1,0 +1,421 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load planteamientos_tags %}
+
+
+{% block body %}
+<div class="right_col" role="main" style="min-height: 1322px;">
+          <div class="">
+
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+              <div class="col-md-12">
+              {% include 'mensajes.html' %}
+                <div class="x_panel">
+                  <div class="x_title d-flex">
+                    <h2>Planteamientos<small>de {{ request.user.get_full_name }}</small></h2>
+
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <div class="row">
+                      <div class="col-sm-3 mail_list_column">
+                        <a href="{% url 'planteamientos:planteamiento' 0 %}" class="btn btn-sm btn-block" type="button" style="background-color: #37526d; color: whitesmoke;">Planteamientos</a>
+
+
+                        <!----------------- Listar Planteamientos --------------------------->
+                      {% if usuario.cant_plant != 0 %}
+                          {% for planteamiento in planteamientos %}
+                        <a href="{% url 'planteamientos:inbox' planteamiento.id %}" >
+                          <div class="mail_list">
+                            <div class="left">
+                              <i class="fa fa-circle"></i>
+                            </div>
+                            <div class="right">
+                              <h3>{{ planteamiento.titulo}}<small>{{ planteamiento.fecha}}</small></h3>
+                              {{ planteamiento.abreviar }}...
+                            </div>
+
+                          </div>
+                        </a>
+                              <br>
+                          {% endfor %}
+                      {% else %}
+
+                        <a href="#">
+                          <div class="mail_list">
+                            <div class="left">
+                              .
+                            </div>
+                            <div class="right">
+                              <h3>Ninguno </h3>
+                              <p> No se han encontrado planteamientos recientemente ... </p>
+                            </div>
+                          </div>
+                        </a>
+
+
+                      {% endif %}
+                      <!------------------ / Listar Planteamientos ---------------------------->
+
+
+                      </div>
+                      <!-- /MAIL LIST -->
+
+                      <!-- CONTENT MAIL -->
+                      <div class="col-sm-9 mail_view">
+                        <div class="inbox-body">
+                          <div class="mail_heading row">
+                            <div class="col-md-8">
+                              <div class="btn-group">
+                                  {% if usuario.tiene_seccion %}
+                                      <a  href="{% url 'planteamientos:crear_planteamiento' %}" type="button" class="btn btn-success btn-sm ml-auto"  >Adicionar Planteamiento</a>
+                                  {% else %}
+                                      <form action="" method="GET">
+                                    <button id="compose" class="btn btn-sm btn-success btn-block" type="submit" {% if mostrar is None or usuario.get_unidad != mostrar.unidad.id or usuario.no_tiene_relacion %}disabled{% endif %} >
+                                        <i class="fa fa-reply"></i>
+                                        Responder
+                                    </button>
+                                      <input type="hidden" value="{{ show }}" name="Responder">
+                                  </form>
+                                  {% endif %}
+
+                                <!------------------------   Reenviar     ------------------------------------>
+
+                                {% if user.is_superuser and mostrar is not None %}
+                                <button class="btn btn-sm btn-default" type="button" data-placement="top" data-toggle="modal" data-target=".bs-example-modal-sm" data-original-title="Reenviar"><i class="fa fa-share"></i></button>
+
+                                <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <form action="" method = "POST">
+                                            {% csrf_token %}
+                                        <div class="modal-body">
+                                            <h4>{{ mostrar.titulo }}</h4>
+
+                                            <div class="form-group row">
+                                                <label class="control-label col-md-3 col-sm-3 ">Unidades</label>
+                                                    <div class="col-md-9 col-sm-9 ">
+                                                        {{ form.unidad }}
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Reenviar</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                </div>
+                                {% endif %}
+
+                              <!---------------- / Reenviar ------------------------------------------------->
+
+
+
+                              </div>
+                            </div>
+                            <div class="col-md-4 text-right">
+                              <p class="date"> {{ mostrar.fecha|date:'d M yy' }}
+                                {% if not mostrar.tiene_respuestas %}<br/><strong style="color: crimson"> {{ mostrar.fecha_vencida|date:'d M yy' }}</strong>{% endif %}
+                              </p>
+
+                            </div>
+                            <div class="col-md-12 ">
+                              <h4 class="d-flex">
+                                  {% if user.is_superuser and mostrar is not None %}
+
+                                  <a href="{% url 'planteamientos:editar' mostrar.id %}">{{ mostrar.titulo }}</a>
+
+                              {% else %}
+                                  {{ mostrar.titulo }}
+                              {% endif %}
+                                  <div class="ml-auto">
+                                <a type="button" data-placement="top"   data-toggle="modal"  data-target=".bs-example-modal-smm" data-original-title="Cambiar"> {{ mostrar.clasificacion }}</a>
+                                  {% if user.is_staff or user.id == mostrar.unidad.responsable_id and mostrar is not None  %}
+
+                                <div class="modal fade bs-example-modal-smm" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <form action="" method = "POST">
+                                            {% csrf_token %}
+                                        <div class="modal-body">
+                                            <h4>Clasificación</h4>
+
+
+                                                <div class="form-group row">
+
+                                                <div class="col-md-12 col-sm-12 " >
+                                                  <select class="form-control" name="clasificacion">
+                                                    <option value="Territorial">Territorial</option>
+                                                    <option value="Nacional">Nacional</option>
+                                                  </select>
+                                                </div>
+                                              </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary" name="clasificar">Confirmar</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                </div>
+                                {% endif %}
+
+                              </div>
+                              </h4>
+
+                            </div>
+
+                          </div>
+                          <div class="sender-info">
+                            <div class="row">
+                              <div class="col-md-12">
+                                  <div class="d-flex">
+                                      <strong>secc. sindical:</strong>  {{ mostrar.seccion_sindical.nombre }}
+                                      <div class="ml-auto"><strong>{{ mostrar.estado }}</strong></div>
+                                  </div>
+                                  <div>
+                                      <strong>activ. rectora:</strong>  {{ mostrar.unidad.nombre }}
+                                  </div>
+                                  <div>
+                                    <strong>secretario:</strong>
+                                    <span>{{ mostrar.secretario }} </span>
+                                    <span>({{ mostrar.seccion_sindical.secretario.email}})</span>
+                                  </div>
+                                  <div>
+                                      <strong>responsable:</strong>
+                                      <span>{{ mostrar.unidad.responsable.first_name }} </span>
+                                      <span>({{ mostrar.unidad.responsable.email }})</span>
+                                  </div>
+                                  <div>
+                                      <strong>proceso:</strong>
+                                      <span>{{ mostrar.procesos|ninguno}} </span>
+
+
+                                       <!------------------------   Reenviar     ------------------------------------>
+
+                                {% if user.is_superuser and mostrar is not None %}
+                                <a type="button" data-placement="top" data-toggle="modal" data-target=".bs-example-modal-sp" ><i class="fa fa-edit"></i></a>
+                                <div class="modal fade bs-example-modal-sp" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <form action="" method = "POST">
+                                            {% csrf_token %}
+                                        <div class="modal-body">
+                                            <h4>{{ mostrar.titulo }}</h4>
+                                            <hr>
+                                            <div class="form-group row">
+                                                <label class="control-label col-md-3 col-sm-3 ">Procesos</label>
+                                                    <div class="col-md-9 col-sm-9 ">
+                                                       <div class="form-group row">
+
+                                                            <div class="col-md-12 col-sm-12 " >
+                                                              <select class="form-control" name="procesos">
+                                                                {% for proceso in procesos %}
+                                                                    <option value="{{ proceso.id }}">{{ proceso }}</option>
+                                                                {% endfor %}
+                                                              </select>
+                                                            </div>
+                                                        </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary" name="proceso" value="proceso">Confirmar</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                </div>
+                                {% endif %}
+
+                              <!---------------- / Reenviar ------------------------------------------------->
+
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="view-mail">
+                              <br>
+                              <p> {{ mostrar.descripcion|linebreaksbr }} </p>
+                          </div>
+
+
+                        {% if not usuario.tiene_seccion  and mostrar.respuestatemporal %}
+                            <hr>
+                            <div class="d-flex">
+                                <h4><strong>Respuesta Pendiente</strong></h4>
+
+                                <div class="ml-auto">
+                                    {% if user.is_staff %}
+                                        <a href="{% url 'respuestas:aprobacion' 1 mostrar.respuestatemporal.id %}"><i class="fa fa-thumbs-up"></i></a>
+                                        &nbsp;
+                                        <a href="{% url 'respuestas:aprobacion' 0 mostrar.respuestatemporal.id %}"><i class="fa fa-thumbs-down"></i></a>
+                                        &nbsp;
+                                    {% endif %}
+                                        <a href="{% url 'respuestas:aprobacion' 2 mostrar.respuestatemporal.id %}"><i class="fa fa-edit"></i></a>
+                                </div>
+
+                            </div>
+                                <div>
+                                    <strong>fecha:</strong>
+                                    <span>{{ mostrar.respuestatemporal.fecha|date:"d M y" }} </span>
+
+                                </div>
+                                <div>
+                                    <strong>de:</strong>
+                                    <span>{{ mostrar.respuestatemporal.autor }}</span>
+                                </div>
+                                <div>
+                                    <strong>Aprobación:</strong>
+                                    <span>
+                                        {% if mostrar.respuestatemporal.validacion  %}
+                                            <i class="fa fa-remove" ></i>
+                                         {% else %}
+                                            <i class="fa fa-spinner" ></i>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <br>
+                                {{ mostrar.respuestatemporal.respuesta|linebreaksbr }}
+
+                                <br>
+
+                        {% endif %}
+
+
+
+                            {% for respuesta in respuestas %}
+                                <hr>
+                                <div>
+                                    <strong>fecha:</strong>
+                                    <span>{{ respuesta.fecha|date:"d M y" }} </span>
+
+                                </div>
+                                <div>
+                                    <strong>de:</strong>
+                                    <span>{{ respuesta.autor }}</span>
+                                </div>
+                                <div>
+                                    <strong>leido:</strong>
+                                    <span>
+                                        {% if respuesta.leido %}
+                                            <i class="fa fa-check-square" ></i>
+                                         {% else %}
+                                            <i class="fa fa-square-o" ></i>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <br>
+
+                                 {{ respuesta.descripcion|linebreaksbr }}
+                            {% endfor %}
+
+                        </div>
+
+                      </div>
+                      <!-- /CONTENT MAIL -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+    {% if show == 'show' %}
+   <form id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left" novalidate=""
+                    method="POST" action="{% url 'respuestas:temporal' %}" onsubmit=" $('#descr').val($('#editor').html());">
+                {% csrf_token %}
+
+    <!-- compose -->
+    <div class="compose col-md-6  " style="display: block;">
+      <div class="compose-header">
+        Adicionar Respuesta
+        <button type="button" class="close compose-close">
+          <span>×</span>
+        </button>
+      </div>
+
+      <div class="compose-body">
+        <div id="alerts"></div>
+
+        <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#editor">
+
+
+
+
+          <div class="btn-group">
+            <a class="btn" data-edit="insertunorderedlist" title="Bullet list"><i class="fa fa-list-ul"></i></a>
+            <a class="btn" data-edit="insertorderedlist" title="Number list"><i class="fa fa-list-ol"></i></a>
+            <a class="btn" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i class="fa fa-dedent"></i></a>
+            <a class="btn" data-edit="indent" title="Indent (Tab)"><i class="fa fa-indent"></i></a>
+          </div>
+
+          <div class="btn-group">
+            <a class="btn" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="fa fa-align-left"></i></a>
+            <a class="btn" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="fa fa-align-center"></i></a>
+            <a class="btn" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="fa fa-align-right"></i></a>
+            <a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></a>
+          </div>
+
+          <div class="btn-group">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i class="fa fa-link"></i></a>
+            <div class="dropdown-menu input-append">
+              <input class="span2" placeholder="URL" type="text" data-edit="createLink">
+              <button class="btn" type="button">Add</button>
+            </div>
+          </div>
+
+            <div class="btn-group">
+            <a class="btn" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="fa fa-undo"></i></a>
+            <a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="fa fa-repeat"></i></a>
+          </div>
+
+        </div>
+
+        <div id="editor" class="editor-wrapper placeholderText" contenteditable="true">{{ respuesta_a_editar }}</div>
+      </div>
+        <input type="hidden" id="descr" name="respuesta">
+
+      <div class="compose-footer">
+        <button id="send" class="btn btn-sm btn-success" type="submit" value="{{ mostrar.id }}" name="planteamiento_id">Enviar</button>
+        &nbsp;
+          <!------- respuesta pendiente ------>
+
+            <div class="checkbox" style="display: inline;">
+                <label>
+                    <input type="checkbox" value="Solucion" name="Solucion" > &nbsp; Esta es una Solución ?
+                </label>
+            </div>
+
+          <!------- / respuesta pendiente ------>
+      </div>
+    </div>
+   </form>
+    <!-- /compose -->
+
+    {% endif %}
+
+{% endblock %}
+
+{% block script %}
+
+    <script src="{% static "scp/vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js" %}"></script>
+
+   <script src="{% static "scp/vendors/jquery.hotkeys/jquery.hotkeys.js" %}"></script>
+   <script src="{% static "scp/vendors/google-code-prettify/src/prettify.js" %}"></script>
+
+
+{% endblock %}

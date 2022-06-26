@@ -1,0 +1,52 @@
+
+apps/
+	planteamientos/
+	    templatestags/
+	        __init__.py
+	        planteamientos_tags.py
+		__init__.py
+		apps.py
+		admin.py
+		models.py
+		test.py
+		urls.py
+		views.py
+	unidades/
+		.....
+	respuestas/
+		.....
+	usuarios/
+	    .....
+	__init__.py
+	email.py
+	forms.py
+	login.py
+	utils.py
+config /
+	__init__.py
+	asgi.py
+	wsgi.py
+	urls.py
+	settings.py
+
+doc/
+    ....
+
+static/
+	scp/
+	  .....
+
+templates/
+	respuestas/
+		# todas las plantillas de planteamientos
+	unidades/
+		.....
+	respuestas/
+		.....
+	usuarios/
+		.....
+	base.html
+	login.html
+
+test/
+

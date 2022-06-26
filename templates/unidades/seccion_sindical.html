@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load unidades_tags %}
+
+{% block link %}
+
+    <!-- iCheck -->
+   <link href="{% static "scp/vendors/iCheck/skins/flat/green.css" %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block body %}
+
+     <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="title_left">
+                <h3>Tabla <small>con contenido de todas las secciones sindicales</small></h3>
+              </div>
+                <form action="" method="GET">
+              <div class="title_right">
+                <div class="col-md-5 col-sm-5   form-group pull-right top_search">
+                  <div class="input-group">
+
+                        <input type="text" class="form-control" placeholder="..." name="buscar">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">Buscar</button>
+                        </span>
+
+                  </div>
+                </div>
+              </div>
+
+
+            </form>
+              <div class="clearfix"></div>
+
+              <div class="col-md-12 col-sm-12  ">
+              {% include 'mensajes.html' %}
+                <div class="x_panel">
+                  <div class="x_title d-flex">
+                    <h2>Secciones Sindicales</h2>
+
+                      <!-------------------- Adicionar Seccion Sindical  -------------------------------------------->
+                      <button type="button" class="btn btn-secondary ml-auto" data-toggle="modal" data-placement="top" title="" data-original-title="Tooltip bottom" data-target=".bs-example-modal-sm">Adicionar Sección Sindical</button>
+                                <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <form action="" method = "POST">
+                                            {% csrf_token %}
+                                        <div class="modal-body">
+                                            <h4>Adicionar Sección Sindical</h4>
+
+                                            <div class="form-group row">
+                                                <label class="control-label col-md-4 col-sm-4 ">Sección Sindical</label>
+                                                    <div class="col-md-9 col-sm-9 ">
+                                                        {{ form.nombre }}
+                                                    </div>
+                                                <br>
+                                                <br>
+                                                <br>
+                                                <label class="control-label col-md-4 col-sm-4 ">Secretario</label>
+                                                    <div class="col-md-9 col-sm-9 ">
+                                                        {{ form.secretario }}
+                                                    </div>
+                                                <br>
+                                                <br>
+                                                <br>
+                                                <label class="control-label col-md-4 col-sm-4 ">Unidad</label>
+                                                    <div class="col-md-9 col-sm-9 ">
+                                                        {{ form.unidad }}
+                                                    </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Adicionar</button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                </div>
+
+                      <!-------------------- Adicionar Seccion Sindical  -------------------------------------------->
+
+                    <div class="clearfix"></div>
+                  </div>
+
+                  <div class="x_content">
+                      <table class="table table-striped jambo_table bulk_action">
+                          <thead>
+                          <tr class="headings">
+                              <th class="column-title">Índice </th>
+                              <th class="column-title">Sección Sindical </th>
+                              <th class="column-title">Secretario </th>
+                              <th class="column-title">Unidad Organizativa </th>
+                              <th class="column-title">Acción</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+
+                          <!---------------------------------------------------------->
+                          {% for seccion in secciones %}
+                              <tr class="even pointer">
+                                  <td class=" ">{{ forloop.counter }}</td>
+                                  <td class=" ">{{ seccion.nombre }} </td>
+                                  <td class=" ">{{ seccion.secretario }}</td>
+                                  <td class=" ">{{ seccion.unidad }}</td>
+                                  <td class=" last"><a type="button"  data-toggle="modal" data-target=".bs-example-modal-{{ seccion.id }}">Ver</a></td>
+                              </tr>
+
+
+                              <!------------------------- Large modal ------------------------->
+
+
+                              <div class="modal fade bs-example-modal-{{ seccion.id }}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                                  <div class="modal-dialog modal-lg">
+                                      <div class="modal-content">
+
+                                          <div class="modal-header">
+                                              <h4 class="modal-title" id="myModalLabel">Ver sección sindical</h4>
+                                              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                                              </button>
+                                          </div>
+                                          <form action="{% url 'unidades:editar_seccion' %}" method="POST">
+                                              {% csrf_token %}
+                                              <div class="modal-body">
+                                                  <div class="form-group row">
+                                                      <label class="control-label col-md-3 col-sm-3 ">Sección Sindical</label>
+                                                      <div class="col-md-9 col-sm-9 ">
+                                                          <input type="text" name="nombre" id="autocomplete-custom-append" class="form-control " autocomplete="off" value="{{ seccion.nombre }}">
+                                                      </div>
+                                                  </div>
+                                                  <br>
+                                                  <div class="form-group row">
+                                                      <label class="control-label col-md-3 col-sm-3 ">Secretario</label>
+                                                      <div class="col-md-9 col-sm-9 ">
+                                                          <select class="form-control" name="secretario">
+                                                              {% for option in form.get_usuarios|sum_list:seccion.secretario %}
+                                                                  <option value="{{ option.id }}" {% if seccion.secretario == option %}selected{% endif %}>{{ option.username}}</option>
+                                                              {% endfor %}
+                                                          </select>
+                                                      </div>
+                                                  </div>
+                                                  <br>
+                                                  <div class="form-group row">
+                                                      <label class="control-label col-md-3 col-sm-3 ">Unidad</label>
+                                                      <div class="col-md-9 col-sm-9 ">
+                                                          <select class="form-control" name="unidad">
+                                                              {% for option in form.unidades %}
+                                                                  <option value="{{ option.id }}" {% if seccion.unidad_id == option.id %}selected{% endif %}>{{ option.nombre}}</option>
+                                                              {% endfor %}
+                                                          </select>
+                                                      </div>
+                                                  </div>
+
+                                              </div>
+                                              <div class="modal-footer d-flex">
+                                                  <a type="button" class="btn btn-danger mr-auto" href="{% url 'unidades:eliminar_seccion' seccion.id %}" >Eliminar</a>
+                                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                                  <button type="submit" class="btn btn-primary" name="Editar" value="{{ seccion.id }}" >Editar</button>
+                                              </div>
+                                          </form>
+                                  </div>
+                              </div>
+                              <!---------------------- /modals ------------------------------->
+
+                        {% endfor %}
+                        <!------------------------------------------------------------->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /page content -->
+
+
+
+{% endblock %}
+
+{% block script %}
+
+
+    <!-- iCheck -->
+    <script src="{% static "scp/vendors/iCheck/icheck.min.js" %}"></script>
+
+{% endblock %}
