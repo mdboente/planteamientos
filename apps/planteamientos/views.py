@@ -17,14 +17,15 @@ from xlsxwriter import Workbook
 import  io
 from django.http import HttpResponse
 import datetime
-
+from dataclasses import dataclass
+from django.template.loader import get_template
 
 class ImportXLXSService:
 
     @classmethod
     def write_header(cls, workbook, worksheet):
         header = ["Fecha de Creación", "Fecha de Vencimiento",
-                  "Clasificación", "Proceso", "Unidad", "Sección Sindical",
+                  "Clasificación", "Estado", "Proceso", "Unidad", "Sección Sindical",
                   "Secretario", "Título", "Descripción", "Respuesta"]
 
         header_format = workbook.add_format({"bold": True})
@@ -52,22 +53,24 @@ class ImportXLXSService:
 
             worksheet.write(f"C{row}", planteamiento.clasificacion)
 
-            worksheet.write(f"D{row}", planteamiento.procesos.proceso)
+            worksheet.write(f"D{row}", planteamiento.estado)
 
-            worksheet.write(f"E{row}", planteamiento.unidad
+            worksheet.write(f"E{row}", planteamiento.procesos.proceso)
+
+            worksheet.write(f"F{row}", planteamiento.unidad
                             and planteamiento.unidad.nombre or "")
 
-            worksheet.write(f"F{row}",
+            worksheet.write(f"G{row}",
                             planteamiento.seccion_sindical
                             and planteamiento.seccion_sindical.nombre or "")
 
-            worksheet.write(f"G{row}", planteamiento.secretario)
-            worksheet.write(f"H{row}", planteamiento.titulo)
-            worksheet.write(f"I{row}", planteamiento.descripcion)
+            worksheet.write(f"H{row}", planteamiento.secretario)
+            worksheet.write(f"I{row}", planteamiento.titulo)
+            worksheet.write(f"J{row}", planteamiento.descripcion)
 
             respuesta = HistorialRespuesta.objects.filter(
                 planteamiento_id=planteamiento.id)\
-                .values("descripcion").first()
+                .values("descripcion").last()
 
             worksheet.write(f"J{row}", respuesta and
                             respuesta.get("descripcion", ""))
@@ -171,6 +174,9 @@ def inbox(request, planteamiento_id, respuesta_a_editar=" ", *, show='hidden') -
                 msj = 'Este planteamiento le quedan {} días para que ' \
                       'culmine su plazo de respuesta'.format(atraso)
                 messages.warning(request, msj, 'ADVERTENCIA !!')
+
+                send_mail("Gestión Planteamiento", msj, mostrar.unidad.responsable.email)
+
             elif atraso <= 0 and not mostrar.tiene_respuestas():
                 historial = HistorialRespuesta()
                 respuesta = 'Se incumple el tiempo de respuesta del planteamiento por %s ' \
@@ -199,17 +205,18 @@ def inbox(request, planteamiento_id, respuesta_a_editar=" ", *, show='hidden') -
         else:
             mostrar.unidad_id = request.POST['unidad']
             mostrar.fecha = timezone.now().date()
-            mostrar.fecha_vencida = sum_days(timezone.now().date())
+            mostrar.fecha_vencida = sum_days(timezone.now().date(), 10)
             mostrar.save()
 
-            # enviar correo
-            mensaje = 'Hola {}!! \r' \
-                      'Se le ha reenviado por el administrador {}' \
-                      ' un Planteamiento de la sección sindical {}, ' \
-                      'Tiene plazo de 10 días hábiles para darle respuesta.' \
-                .format(mostrar.unidad.responsable.first_name, request.user.first_name,
-                        mostrar.seccion_sindical.nombre)
-            send_mail('Gestión Planteamiento', mensaje, mostrar.unidad.responsable.email)
+            if mostrar.estado != Planteamiento.ESTANCADO:
+                # enviar correo
+                mensaje = 'Hola {}!! \r' \
+                          'Se le ha reenviado por el administrador {}' \
+                          ' un Planteamiento de la sección sindical {}, ' \
+                          'Tiene plazo de 10 días hábiles para darle respuesta.' \
+                    .format(mostrar.unidad.responsable.first_name, request.user.first_name,
+                            mostrar.seccion_sindical.nombre)
+                send_mail('Gestión Planteamiento', mensaje, mostrar.unidad.responsable.email)
 
             # notificar
             mensaje2 = 'Se ha reenviado el planteamiento de la sección {} para la unidad {}' \
@@ -232,6 +239,10 @@ def crear_planteamiento(request) -> HttpResponse:
         datos['descripcion'] = descripcion
         datos['secretario'] = request.user.first_name
         datos['seccion_sindical'] = UsuarioLogin.relacion(request, seccion=True)
+        datos["estado"] = Planteamiento.ESTANCADO
+        datos["fecha"] = timezone.now()
+        datos["modificado"] = timezone.now()
+        datos["fecha_vencida"] = sum_days(timezone.now(), 10)
         form = FormPlanteamiento(data=datos)
         if form.is_valid():
             form.save()
