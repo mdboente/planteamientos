@@ -1,4 +1,7 @@
+import datetime
 from abc import ABC
+from copy import copy
+
 from django.db.models import Q
 from apps.planteamientos.models import *
 from apps.respuestas.models import HistorialRespuesta
@@ -71,18 +74,16 @@ class UsuarioLogin(object):
         @rtype: object
         """
 
-        plant: list = []
-        if not self.user.is_staff:
-            if self.tiene_seccion:
-                x = self.seccion.id
-                plant = Planteamiento.objects.filter(Q(seccion_sindical_id=x)).order_by('-id')
-            elif self.tiene_unidad:
-                x = self.unidad.id
-                plant = Planteamiento.objects.filter(Q(unidad_id=x)).order_by('-id')
-        else:
-            plant = Planteamiento.objects.all().order_by('-id')
-        if len(plant) != 0 and estado is not None:
-            plant = plant.filter(estado=estado)
+        q_conditions = Q()
+
+        if self.tiene_seccion and not self.user.is_superuser:
+            q_conditions &= Q(seccion_sindical_id=self.seccion.id)
+        elif self.tiene_unidad:
+            q_conditions &= Q(unidad_id=self.unidad.id)
+            q_conditions &= ~Q(estado=Planteamiento.ESTANCADO)
+
+        plant = Planteamiento.objects.filter(q_conditions).order_by("-id")
+
         if limit is not None:
             plant = plant[:limit]
         return plant
@@ -198,9 +199,13 @@ class Html(HTMLParser, ABC):
         return f.text
 
 
-def sum_days(date: datetime, cont=0):
-    if cont == 10:
-        return date
-    else:
-        x = date.isoweekday()
-        return sum_days(date + timedelta(days=1), cont + 1 if x not in [6, 7] else cont)
+def sum_days(date: datetime, n_days: int):
+    """ Get date after n enables days  """
+
+    count = 0
+    while count < n_days:
+        date = date + timedelta(days=1)
+        if date.isoweekday() not in [6, 7]:
+            count += 1
+
+    return date

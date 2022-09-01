@@ -271,3 +271,87 @@ def notificaciones(request):
     notify = Notification(request)
     lista_notificaciones = notify.get_list_notify()
     return render(request, 'planteamientos/notification.html', locals())
+
+
+class PlanteamientosAprobar(View):
+
+    def get(self, request, planteamiento_id, aprobado):
+
+        planteamiento = Planteamiento.objects.get(id=planteamiento_id)
+
+        approach_approve_input_dto = ApproachApproveInputDTO(
+            approach=planteamiento,
+            approve=bool(aprobado),
+            authenticatd_user=request.user.get_full_name(),
+            authenticatd_user_email=request.user.email
+        )
+
+        planteamiento_aprobado = ApproachApproveService.execute(
+            approach_approve_input_dto)
+
+        if not planteamiento_aprobado.is_approved:
+            planteamiento = Planteamiento.objects.filter(
+                seccion_sindical__id=planteamiento.seccion_sindical.id)\
+                .last()
+
+        return inbox(request, planteamiento.id)
+
+
+@dataclass
+class ApproachApproveOutputDTO:
+    """ ApproachApproveInputDTO class """
+    approach: Planteamiento
+    is_approved: bool
+    estado: str
+
+
+@dataclass
+class ApproachApproveInputDTO:
+    """ ApproachApproveInputDTO class """
+    authenticatd_user_email: str
+    authenticatd_user: str
+    approach: Planteamiento
+    approve: bool = False
+
+
+
+class ApproachApproveService:
+    """ ApproachApproveService class """
+
+    @classmethod
+    def execute(cls, approach_approve_dto: ApproachApproveInputDTO):
+
+        approach = approach_approve_dto.approach
+        approve = approach_approve_dto.approve
+
+        if approve:
+            approach.estado = Planteamiento.NUEVO
+            approach.modificado = timezone.now()
+
+            enables_days_to_expire = 10
+            expiration_date = sum_days(
+                approach.modificado, enables_days_to_expire)
+            approach.fecha_vencida = expiration_date
+
+            approach.save()
+        else:
+            secretary = approach.seccion_sindical.secretario
+            template = get_template('emails/desaprobar_planteamiento.html')
+            context = {
+                'user': secretary.get_full_name(),
+                'approach': approach.titulo,
+                'created_date': approach.fecha,
+                'authenticated_user': approach_approve_dto.authenticatd_user,
+                'authenticated_user_email':
+                    approach_approve_dto.authenticatd_user_email,
+                'description': approach.descripcion
+            }
+
+            message = template.render(context)
+            subject = "Gestión Planteamientos"
+
+            send_mail(subject, message, secretary.email)
+
+            approach.delete()
+
+        return ApproachApproveOutputDTO(approach, approve, approach.estado)

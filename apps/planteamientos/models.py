@@ -31,11 +31,18 @@ class Planteamiento(models.Model):
         * unidad -- unidad que recibe el planteamiento
     """
 
-    # estados de los planteamientos
+    # estados de los
+
+    ESTANCADO = 'Estancado'
+    NUEVO = 'Nuevo'
+    PENDIENTE = 'Pendiente'
+    SOLUCIONADO = 'Solucionado'
+
     Choices = (
-        ('Nuevo', 'Nuevo'),
-        ('Pendiente', 'Pendiente'),
-        ('Solucionado', 'Solucionado')
+        (ESTANCADO, 'Estancado'),
+        (NUEVO, 'Nuevo'),
+        (PENDIENTE, 'Pendiente'),
+        (SOLUCIONADO, 'Solucionado')
     )
 
     # clasificacion de los planteamientos
@@ -46,14 +53,18 @@ class Planteamiento(models.Model):
 
     titulo = models.CharField(max_length=24)
     descripcion = models.TextField()
-    estado = models.CharField(max_length=20, choices=Choices, default='Nuevo')
+    estado = models.CharField(max_length=20, choices=Choices, default=ESTANCADO)
     fecha = models.DateField(default=timezone.now)
-    fecha_vencida = models.DateField(default=dias_habiles(timezone.now().date()))
+    modificado = models.DateField(default=timezone.now)
+    fecha_vencida = models.DateField()
     secretario = models.CharField(max_length=60)
     seccion_sindical = models.ForeignKey(SeccionSindical, on_delete=models.SET_NULL, null=True)
     unidad = models.ForeignKey(UnidadOrganizativa, on_delete=models.SET_NULL, null=True)
     clasificacion = models.CharField(max_length=12, choices=Choices2, default='Territorial')
     procesos = models.ForeignKey(Procesos, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.titulo}, {self.unidad}, {self.seccion_sindical}, {self.estado}, {self.fecha} "
 
     def abreviar(self):
         breve = self.descripcion[:100]

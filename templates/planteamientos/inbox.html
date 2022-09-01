@@ -82,11 +82,22 @@
                                   </form>
                                   {% endif %}
 
+                                  <div>
+
+                                  </div>
+
+
                                 <!------------------------   Reenviar     ------------------------------------>
 
-                                {% if user.is_superuser and mostrar is not None %}
+                                {% if user.is_superuser and mostrar is not None  %}
                                 <button class="btn btn-sm btn-default" type="button" data-placement="top" data-toggle="modal" data-target=".bs-example-modal-sm" data-original-title="Reenviar"><i class="fa fa-share"></i></button>
 
+                                  {% if mostrar.estado == mostrar.ESTANCADO %}
+
+                                      <a href="{% url 'planteamientos:evaluar_planteamiento' mostrar.id 1 %}" class="btn btn-sm btn-default" type="button" data-original-title="Aprobar"><i class="fa fa-thumbs-up"> </i> </a>
+                                      <a href="{% url 'planteamientos:evaluar_planteamiento' mostrar.id 0 %}" class="btn btn-sm btn-default" type="button" data-original-title="Desaprobar"><i class="fa fa-thumbs-down"> </i> </a>
+
+                                  {% endif %}
                                 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
                                 <div class="modal-dialog modal-sm">
                                     <div class="modal-content">
@@ -119,8 +130,8 @@
                               </div>
                             </div>
                             <div class="col-md-4 text-right">
-                              <p class="date"> {{ mostrar.fecha|date:'d M yy' }}
-                                {% if not mostrar.tiene_respuestas %}<br/><strong style="color: crimson"> {{ mostrar.fecha_vencida|date:'d M yy' }}</strong>{% endif %}
+                              <p class="date"> {{ mostrar.fecha|date:'d M Y' }}
+                                {% if not mostrar.tiene_respuestas and mostrar.estado != mostrar.ESTANCADO %}<br/><strong style="color: crimson"> {{ mostrar.fecha_vencida|date:'d M Y' }}</strong>{% endif %}
                               </p>
 
                             </div>
@@ -411,6 +422,18 @@
 {% endblock %}
 
 {% block script %}
+
+    <script>
+
+        function evalApproach(approved){
+            let eval_approach_window = document.getElementById("evaluation_approach");
+            eval_approach_window.style.display = "block";
+
+            let eval_approach_bu
+
+        }
+
+    </script>
 
     <script src="{% static "scp/vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js" %}"></script>
 

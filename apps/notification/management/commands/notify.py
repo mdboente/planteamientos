@@ -7,7 +7,7 @@ from apps.unidades.models import UnidadOrganizativa
 from config.settings import EMAIL_HOST
 from django.contrib.auth.models import User
 from apps.respuestas.models import RespuestaTemporal
-
+from django.template.loader import get_template
 
 class Command(BaseCommand):
     help = "Envia un correo a cada representante " \
@@ -16,14 +16,34 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         fecha_hoy = timezone.now().date()
-        planteamientos = Planteamiento.objects.filter(Q(fecha=fecha_hoy))
+        planteamientos = Planteamiento.objects.filter(Q(fecha=fecha_hoy) | Q(modificado=fecha_hoy))
         unidades = UnidadOrganizativa.objects.all()
         respuestas = RespuestaTemporal.objects.filter(Q(fecha=fecha_hoy))
         contd = len(respuestas)
         cant_planteamientos, dicc_unidades = 0, {}
         admins = User.objects.filter(Q(is_staff=True))
+        superusers = User.objects.filter(Q(is_superuser=True))
+
         if not test_connect_email():
             raise CommandError('No se ha podido establecer conexión con el HOST {} '.format(EMAIL_HOST))
+
+        planteamientos_estancados = planteamientos.filter(estado=Planteamiento.ESTANCADO)
+        print(planteamientos_estancados, fecha_hoy)
+        if planteamientos_estancados:
+
+            for user in superusers:
+                template = get_template("emails/aprobar_planteamiento.html")
+
+                subject = 'Gestión Planteamiento'
+                context = {
+                    'user': user.get_full_name() or user.username,
+                    'fecha_hoy': fecha_hoy,
+                    'planteamientos': planteamientos_estancados
+                }
+                message = template.render(context)
+                send_mail(subject, message, user.email)
+
+        planteamientos = planteamientos.filter(Q(estado=Planteamiento.NUEVO))
 
         for admin in admins:
             cont = len(planteamientos)
@@ -44,13 +64,11 @@ class Command(BaseCommand):
                 mensaje += str_secciones
                 send_mail('Gestión Planteamiento', mensaje, admin.email)
 
-
             if contd != 0:
                 mensaje = 'Hola {}!! \r' \
                           'Hoy se le han enviado {} {} para ser evaluadas.'\
                     .format(admin.first_name, contd, 'respuesta' if cant_planteamientos == 1 else 'respuestas')
                 send_mail('Gestión Planteamiento', mensaje, admin.email)
-
 
         for unidad in unidades:
             planteamiento = planteamientos.filter(Q(unidad=unidad))

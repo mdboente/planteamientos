@@ -11,7 +11,7 @@ class FormPlanteamiento(forms.ModelForm):
 
     class Meta:
         model = Planteamiento
-        exclude = ['estado', 'fecha', 'clasificacion', 'fecha_vencida']
+        exclude = ['estado', 'fecha', 'clasificacion']
 
         widgets = {'unidad': forms.Select(attrs={'class': "select2_single form-control"}),
                    'titulo': forms.TextInput(attrs={'class': "form-control ", 'list': 'listado'}),

@@ -82,7 +82,7 @@ def eliminar_usuario(request, id_usuario: int) -> HttpResponse:
 def editar_usuario(request, id_usuario: int, roll: int) -> HttpResponse:
     usuario = get_object_or_404(User, pk=id_usuario)
     error_email = False
-    if request.user == usuario or request.user.is_staff:
+    if request.user == usuario or request.user.is_superuser:
         if request.method == "POST":
             try:
                 usuario.username = request.POST["username"]

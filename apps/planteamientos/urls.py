@@ -10,6 +10,6 @@ urlpatterns = [
     path('notificaciones/', views.notificaciones, name='notificaciones'),
     path('editar/<id_planteamiento>/', views.editar_planteamiento, name='editar'),
     path("import/xlsx/", views.PlanteamientosImportXLSXService.as_view(),
-         name="xlsx")
-
+         name="xlsx"),
+    path("evaluacion/<int:planteamiento_id>/<int:aprobado>", views.PlanteamientosAprobar.as_view(), name="evaluar_planteamiento")
 ]

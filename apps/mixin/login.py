@@ -75,7 +75,7 @@ def logout(request):
 
 
 def administrador(user):
-    return user.is_staff
+    return user.is_staff or user.is_superuser
 
 
 def secretario(user):
